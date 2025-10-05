@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css';
 import { DownOutlined } from '@ant-design/icons';
-import { Tree, Button } from 'antd';
+import { Tree, Button, Input } from 'antd';
 
 const getInfoString = (key, infoMap) => {
   const info = infoMap.get(key);
@@ -27,6 +27,7 @@ const getAllParentKeys = (data, keys = []) => {
 function App() {
   const [hierarchyTree, setHierarchyTree] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
+  const [searchParent, setSearchParent] = useState('');
 
   const onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
@@ -112,8 +113,8 @@ function App() {
 
   };
 
-  const clickQuery = async () => {
-    const res = await window.api.getHierarchyList();
+  const clickQuery = async (header) => {
+    const res = await window.api.getHierarchyList(header);
     const listSet = new Set();
     res.forEach(x => {
       listSet.add(x['child']);
@@ -126,7 +127,7 @@ function App() {
         infoMap.set(item['material'], item);
       }
     });
-    const hierarchyTree = buildHierarchyTree(res, infoMap)
+    const hierarchyTree = buildHierarchyTree(res, infoMap);
     const allKeys = getAllParentKeys(hierarchyTree);
     setHierarchyTree(hierarchyTree);
     setExpandedKeys(allKeys);
@@ -134,20 +135,36 @@ function App() {
 
   return (
     <>
-      <Tree
-        showLine
-        switcherIcon={<DownOutlined />}
-        onSelect={onSelect}
-        onExpand={onExpand}
-        expandedKeys={expandedKeys}
-        treeData={hierarchyTree}
-      />
-
-      <Button
-        onClick={clickQuery}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '400px',
+          width: '100%',
+          overflow: 'hidden'
+        }}
       >
-        Query
-      </Button>
+        <Input
+          placeholder="Please Input the key"
+          variant="underlined"
+          value={searchParent}
+          onChange={e => setSearchParent(e.target.value)}
+          onPressEnter={() => clickQuery(searchParent)}
+        />
+        <Tree
+          style={{
+            flex: 1,
+            width: '100%',
+            overflow: 'auto'
+          }}
+          showLine
+          switcherIcon={<DownOutlined />}
+          onSelect={onSelect}
+          onExpand={onExpand}
+          expandedKeys={expandedKeys}
+          treeData={hierarchyTree}
+        />
+      </div>
     </>
   )
 }

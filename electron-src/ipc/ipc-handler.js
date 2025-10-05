@@ -9,7 +9,7 @@ export function setupIpcHandlers() {
   });
 
   ipcMain.handle('get-hierarchy-list', async(event, data) => {
-    const res = await HierarchyDao.getHierarchyList('materialA');
+    const res = await HierarchyDao.getHierarchyList(data);
     return res;
   });
 
