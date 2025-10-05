@@ -1,4 +1,4 @@
-import { pgClientPool } from '../db/pgConn.js';
+import { pgClientPool } from '../db/pg-conn.js';
 
 const BomDao = {
   async getTestResultText() {

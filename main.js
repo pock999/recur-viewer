@@ -1,8 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { pgClientPool } from './src/db/pgConn.js';
-import BomDao from './src/dao/BomDao.js';
+import { setupIpcHandlers } from './electron-src/ipc/ipc-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,18 +31,10 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:3000');
 }
 
-const testDb = async () => {
-  const client = await pgClientPool.connect();
-  const sql = 'SELECT * FROM public.bom';
-  const res = await client.query(sql, []);
-  console.log(res);
-  console.log(res.rows);
-  console.log(res.rows[0]);
-}
-
 app.whenReady()
-.then(() => testDb())
 .then(() => {
+  // IPC process
+  setupIpcHandlers();
   createWindow();
 
   app.on('activate', () => {
@@ -58,8 +49,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-ipcMain.handle('test-db-result-text', async(event, data) => {
-  const res = await BomDao.getTestResultText();
-  return res;
-})
