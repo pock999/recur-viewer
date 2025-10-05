@@ -13,13 +13,31 @@ const getInfoString = (key, infoMap) => {
   return `${key}-${info['material_type']} (${info['manufacturer']})`;
 };
 
+const getAllParentKeys = (data, keys = []) => {
+  data.forEach(item => {
+    // 只有有 children 的節點才需要被展開
+    if (item.children && item.children.length > 0) {
+      keys.push(item.key);
+      getAllParentKeys(item.children, keys);
+    }
+  });
+  return keys;
+};
+
 function App() {
   const [hierarchyTree, setHierarchyTree] = useState([]);
+  const [expandedKeys, setExpandedKeys] = useState([]);
 
   const onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
   };
   
+  const onExpand = (newExpandedKeys) => {
+    // 每次使用者操作時，更新 expandedKeys 狀態
+    setExpandedKeys(newExpandedKeys);
+  };
+
+
   const buildHierarchyTree = (flatList, infoMap) => {
     if (!flatList || flatList.length === 0) {
       return [];
@@ -94,7 +112,7 @@ function App() {
 
   };
 
-  const clickTestQuery = async () => {
+  const clickQuery = async () => {
     const res = await window.api.getHierarchyList();
     const listSet = new Set();
     res.forEach(x => {
@@ -108,7 +126,10 @@ function App() {
         infoMap.set(item['material'], item);
       }
     });
-    setHierarchyTree(buildHierarchyTree(res, infoMap));
+    const hierarchyTree = buildHierarchyTree(res, infoMap)
+    const allKeys = getAllParentKeys(hierarchyTree);
+    setHierarchyTree(hierarchyTree);
+    setExpandedKeys(allKeys);
   };
 
   return (
@@ -116,13 +137,14 @@ function App() {
       <Tree
         showLine
         switcherIcon={<DownOutlined />}
-        defaultExpandedKeys={['0-0-0']}
         onSelect={onSelect}
+        onExpand={onExpand}
+        expandedKeys={expandedKeys}
         treeData={hierarchyTree}
       />
 
       <Button
-        onClick={clickTestQuery}
+        onClick={clickQuery}
       >
         Query
       </Button>
