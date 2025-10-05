@@ -1,10 +1,14 @@
 import { ipcMain } from 'electron';
-import BomDao from '../dao/bom-dao.js';
+import HierarchyDao from '../dao/hierarchy-dao.js';
 
 export function setupIpcHandlers() {
-  console.log("setupIpcHandlers");
   ipcMain.handle('test-db-result-text', async(event, data) => {
-    const res = await BomDao.getTestResultText();
+    const res = await HierarchyDao.getTestResultText();
+    return res;
+  })
+
+  ipcMain.handle('get-hierarchy-list', async(event, data) => {
+    const res = await HierarchyDao.getHierarchyList('materialA');
     return res;
   })
 }
