@@ -13,6 +13,8 @@
     "keepAliveInitialDelayMillis": 20000
   },
   "recurViewConfig": {
-    "tableName": "public.table_name"
+    "tableName": "public.table_name",
+    "infoTableName": "public.info_table_name",
+    "infoTableKey": "primary_key"
   }
 }

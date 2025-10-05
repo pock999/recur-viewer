@@ -5,56 +5,13 @@ import './App.css';
 import { DownOutlined } from '@ant-design/icons';
 import { Tree, Button } from 'antd';
 
-const treeData = [
-  {
-    title: 'parent 1',
-    key: '0-0',
-    children: [
-      {
-        title: 'parent 1-0',
-        key: '0-0-0',
-        children: [
-          {
-            title: 'leaf',
-            key: '0-0-0-0',
-          },
-          {
-            title: 'leaf',
-            key: '0-0-0-1',
-          },
-          {
-            title: 'leaf',
-            key: '0-0-0-2',
-          },
-        ],
-      },
-      {
-        title: 'parent 1-1',
-        key: '0-0-1',
-        children: [
-          {
-            title: 'leaf',
-            key: '0-0-1-0',
-          },
-        ],
-      },
-      {
-        title: 'parent 1-2',
-        key: '0-0-2',
-        children: [
-          {
-            title: 'leaf',
-            key: '0-0-2-0',
-          },
-          {
-            title: 'leaf',
-            key: '0-0-2-1',
-          },
-        ],
-      },
-    ],
-  },
-];
+const getInfoString = (key, infoMap) => {
+  const info = infoMap.get(key);
+  if(!info) {
+    return `${key}`;
+  }
+  return `${key}-${info['material_type']} (${info['manufacturer']})`;
+};
 
 function App() {
   const [hierarchyTree, setHierarchyTree] = useState([]);
@@ -63,7 +20,7 @@ function App() {
     console.log('selected', selectedKeys, info);
   };
   
-  const buildHierarchyTree = (flatList) => {
+  const buildHierarchyTree = (flatList, infoMap) => {
     if (!flatList || flatList.length === 0) {
       return [];
     }
@@ -82,7 +39,7 @@ function App() {
       // 確保父節點存在
       if (!map.has(item.parent)) {
         map.set(item.parent, {
-          title: item.parent,
+          title: getInfoString(item.parent, infoMap),
           key: item.parent,
           children: []
         });
@@ -91,7 +48,7 @@ function App() {
       // 確保子節點存在
       if (!map.has(item.child)) {
         map.set(item.child, {
-          title: item.child,
+          title: getInfoString(item.child, infoMap),
           key: item.child,
           children: []
         });
@@ -139,7 +96,19 @@ function App() {
 
   const clickTestQuery = async () => {
     const res = await window.api.getHierarchyList();
-    setHierarchyTree(buildHierarchyTree(res));
+    const listSet = new Set();
+    res.forEach(x => {
+      listSet.add(x['child']);
+      listSet.add(x['parent']);
+    });
+    const infoRes = await window.api.getInfoByKey([...listSet]);
+    const infoMap = new Map();
+    infoRes.forEach(item => {
+      if (!infoMap.has(item['material'])) {
+        infoMap.set(item['material'], item);
+      }
+    });
+    setHierarchyTree(buildHierarchyTree(res, infoMap));
   };
 
   return (
