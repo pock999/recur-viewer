@@ -1,15 +1,15 @@
-import { pgClientPool, dbSetting } from '../db/pg-conn.js';
+import { pgClientPool, dbSetting } from "../db/pg-conn.js";
 
 const InfoDao = {
   async getInfoByKey(key) {
     const searchList = [];
-    if(Array.isArray(key)) {
+    if (Array.isArray(key)) {
       searchList.push(...key);
     } else {
       searchList.push(key);
     }
 
-    if(searchList.length === 0) {
+    if (searchList.length === 0) {
       return [];
     }
 
@@ -17,7 +17,7 @@ const InfoDao = {
     try {
       client = await pgClientPool.connect();
 
-      const placeholders = searchList.map((_, i) => `$${i + 1}`).join(', ');
+      const placeholders = searchList.map((_, i) => `$${i + 1}`).join(", ");
 
       const sql = `
         SELECT * FROM ${dbSetting.infoTableName}
@@ -32,7 +32,7 @@ const InfoDao = {
     } finally {
       // 3. 關鍵！無論成功或失敗，都必須釋放連線
       if (client) {
-        client.release(); 
+        client.release();
       }
     }
   },

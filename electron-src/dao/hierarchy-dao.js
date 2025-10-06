@@ -1,4 +1,4 @@
-import { pgClientPool, dbSetting } from '../db/pg-conn.js';
+import { pgClientPool, dbSetting } from "../db/pg-conn.js";
 
 const HierarchyDao = {
   async getTestResultText() {
@@ -14,10 +14,9 @@ const HierarchyDao = {
     } finally {
       // 3. 關鍵！無論成功或失敗，都必須釋放連線
       if (client) {
-        client.release(); 
+        client.release();
       }
     }
-    
   },
   async getHierarchyList(header) {
     let client;
@@ -60,11 +59,10 @@ const HierarchyDao = {
     } finally {
       // 3. 關鍵！無論成功或失敗，都必須釋放連線
       if (client) {
-        client.release(); 
+        client.release();
       }
     }
   },
 };
-
 
 export default HierarchyDao;
