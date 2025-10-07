@@ -14,12 +14,12 @@ import {
   Typography,
 } from "antd";
 
-const getInfoString = (key, infoMap) => {
+const getInfoContent = (key, infoMap) => {
   const info = infoMap.get(key);
   if (!info) {
     return `${key}`;
   }
-  return `${key}-${info["material_type"]} (${info["manufacturer"]})`;
+  return `${info["material_type"]} (${info["manufacturer"]})`;
 };
 
 const getAllParentKeys = (data, keys = []) => {
@@ -31,6 +31,23 @@ const getAllParentKeys = (data, keys = []) => {
     }
   });
   return keys;
+};
+
+const titleRenderCustomerComp = (nodeData) => {
+  const { title, content } = nodeData;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        justifyContent: "flex-start",
+        padding: 5,
+      }}
+    >
+      <Typography.Text mark>{title}</Typography.Text> &ensp;
+      {content}
+    </div>
+  );
 };
 
 function App() {
@@ -67,7 +84,8 @@ function App() {
       // 確保父節點存在
       if (!map.has(item.parent)) {
         map.set(item.parent, {
-          title: getInfoString(item.parent, infoMap),
+          title: item.parent,
+          content: getInfoContent(item.parent, infoMap),
           key: item.parent,
           children: [],
         });
@@ -76,7 +94,8 @@ function App() {
       // 確保子節點存在
       if (!map.has(item.child)) {
         map.set(item.child, {
-          title: getInfoString(item.child, infoMap),
+          title: item.child,
+          content: getInfoContent(item.child, infoMap),
           key: item.child,
           children: [],
         });
@@ -184,6 +203,8 @@ function App() {
               onExpand={onExpand}
               expandedKeys={expandedKeys}
               treeData={hierarchyTree}
+              blockNode={true}
+              titleRender={titleRenderCustomerComp}
             />
           </>
         )}
