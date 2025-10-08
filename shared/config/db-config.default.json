@@ -15,6 +15,10 @@
   },
   "recurViewConfig": {
     "tableName": "public.table_name",
+    "hierarchyKey": {
+      "parentCol": "parent",
+      "childCol": "child"
+    },
     "infoTableName": "public.info_table_name",
     "infoTableKey": "primary_key"
   }

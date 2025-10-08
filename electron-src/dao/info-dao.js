@@ -1,4 +1,4 @@
-import { pgClientPool, dbSetting } from "../db/pg-conn.js";
+import { pgClientPool, recurViewConfig } from "../db/pg-conn.js";
 
 const InfoDao = {
   async getInfoByKey(key) {
@@ -20,8 +20,8 @@ const InfoDao = {
       const placeholders = searchList.map((_, i) => `$${i + 1}`).join(", ");
 
       const sql = `
-        SELECT * FROM ${dbSetting.infoTableName}
-        WHERE ${dbSetting.infoTableKey} IN (${placeholders})
+        SELECT * FROM ${recurViewConfig.infoTableName}
+        WHERE ${recurViewConfig.infoTableKey} IN (${placeholders})
       `;
 
       const res = await client.query(sql, [...searchList]);

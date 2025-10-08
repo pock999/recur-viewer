@@ -1,0 +1,8 @@
+{
+  "primaryColumnKey": "column1",
+  "columnDisplay": {
+    "//1": "...flex as needed (column, seq)...",
+    "column1": "Column 1 Show Text",
+    "column2": "Column 2 Show Text"
+  }
+}

@@ -13,13 +13,17 @@ import {
   List,
   Typography,
 } from "antd";
+import { primaryColumnKey, showTitleKey, showTitle } from "./ui-config.js";
 
 const getInfoContent = (key, infoMap) => {
   const info = infoMap.get(key);
   if (!info) {
     return `${key}`;
   }
-  return `${info["material_type"]} (${info["manufacturer"]})`;
+
+  const list = showTitleKey.map((x) => info[x]);
+
+  return list.join(", ");
 };
 
 const getAllParentKeys = (data, keys = []) => {
@@ -145,14 +149,14 @@ function App() {
     const res = await window.api.getHierarchyList(header);
     const listSet = new Set();
     res.forEach((x) => {
-      listSet.add(x["child"]);
-      listSet.add(x["parent"]);
+      listSet.add(x.child);
+      listSet.add(x.parent);
     });
     const infoRes = await window.api.getInfoByKey([...listSet]);
     const infoMap = new Map();
     infoRes.forEach((item) => {
-      if (!infoMap.has(item["material"])) {
-        infoMap.set(item["material"], item);
+      if (!infoMap.has(item[primaryColumnKey])) {
+        infoMap.set(item[primaryColumnKey], item);
       }
     });
     const hierarchyTree = buildHierarchyTree(res, infoMap);
@@ -191,6 +195,9 @@ function App() {
               onChange={(e) => setSearchParent(e.target.value)}
               onPressEnter={() => clickQuery(searchParent)}
             />
+            <Typography.Text mark style={{ textAlign: "left" }}>
+              {showTitle.join(", ")}
+            </Typography.Text>
             <Tree
               style={{
                 flex: 1,

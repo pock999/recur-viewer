@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import dbConfig from '../config/db-config.json' with { type: 'json' };
+import dbConfig from '../../shared/config/db-config.json' with { type: 'json' };
 
 export const pgClientPool = new Pool({...dbConfig.db});
-export const dbSetting = dbConfig.recurViewConfig;
+export const recurViewConfig = dbConfig.recurViewConfig;
